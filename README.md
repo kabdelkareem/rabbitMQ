@@ -18,14 +18,11 @@ Dead-letter messages should be logged or notified to origin system administrator
 communication with consumer system administrator to solve the problem.
 
 This diagram explained what this project will do
-![ScreenShot](project description diagram.jpg)
+![ScreenShot](project%20description%20diagram.jpg)
 
 
 Prerequisites for Running the Project
 -------------------------------------
 1. You must have the following installed on your machine:
    - JDK 1.8 or higher
-   - Maven 3.5.2 or higher
-
-  For more information, see the README in the top-level examples
-  directory.
+   - Maven
