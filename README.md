@@ -17,8 +17,8 @@ the limit, it should be considered as a dead-letter message.
 Dead-letter messages should be logged or notified to origin system administrator to start
 communication with consumer system administrator to solve the problem.
 
-
-[This diagram explained what this project will do ](project description diagram.jpg)
+This diagram explained what this project will do
+![ScreenShot](project description diagram.jpg)
 
 
 Prerequisites for Running the Project
