@@ -26,7 +26,7 @@ There 'll be 5 independent modules in this project:
 - rabbitmq-connector: project used as upper layer of amqp-client provided by rabbitMQ to make publishing & consumming easier.
 - app1: sample publisher application using rabbitmq-connector
 - app2: sample consummer application using rabbitmq-connector
-- esb: Enterprise Service Bus layer responsible for requeue, deadletter, and log messages.
+- esb: Enterprise Service Bus project responsible for requeue, deadletter, and log messages.
 
 
 Prerequisites for Running the Project
