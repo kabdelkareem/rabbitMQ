@@ -1,6 +1,6 @@
 Purpose
 -------
-Contains the integration services and connectors.
+Contains the rabbitmq integration services and connectors.
 
 
 Explanation
