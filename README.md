@@ -1,11 +1,24 @@
+#RabbitMQ Integration 
+
 Purpose
 -------
-Contains the rabbitmq integration services and connectors.
+Contains the rabbitMQ integration services and connectors.
 
 
 Explanation
 -----------
-Contains the integration services and connectors.
+This project found to help others that use RabbitMQ services and stuck in the
+same problem as me that there are no general re-delivery policy in rabbitMQ server.
+
+Re-delivery policy means that failed messages during delivery have to be delayed
+before next try. Also there must be a limit for re-delivers and when message exceeds
+the limit, it should be considered as a dead-letter message.
+
+Dead-letter messages should be logged or notified to origin system administrator to start
+communication with consumer system administrator to solve the problem.
+
+
+[This diagram explained what this project will do ](project description diagram.jpg)
 
 
 Prerequisites for Running the Project
