@@ -1,4 +1,4 @@
-RabbitMQ Services Installer
+# RabbitMQ Services Installer
 
 Purpose
 -------
