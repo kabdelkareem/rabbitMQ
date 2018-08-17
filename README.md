@@ -1,14 +1,11 @@
-#Ejada Integration Services
-======================
-
 Purpose
 -------
-Contains the integration services and connectors with Ejada.
+Contains the integration services and connectors.
 
 
 Explanation
 -----------
-Contains the integration services and connectors with Ejada.
+Contains the integration services and connectors.
 
 
 Prerequisites for Running the Project
