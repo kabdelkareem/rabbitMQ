@@ -1,11 +1,3 @@
-/*
- * Licensed to the Ejada Limited Systems under one or more
- * contributor license agreements. 
- */
-
-Ejada GRP Integration Services Installer
-======================
-
 Purpose
 -------
 Install GRP Integration Services
