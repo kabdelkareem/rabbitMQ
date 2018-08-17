@@ -1,0 +1,37 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.karim.examples.rabbitmq</groupId>
+	<artifactId>rabbitmq-integration</artifactId>
+	<version>1.0.0</version>
+	<packaging>pom</packaging>
+
+	<name>Rabbitmq Integrations</name>
+	<description>Rabbitmq Integrations</description>
+
+	<modules>
+		<module>rabbitmq-installer</module>
+	</modules>
+	
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<compile.java>1.8</compile.java>
+		
+		<maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
+	</properties>
+	
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${maven-compiler-plugin.version}</version>
+				<configuration>
+					<source>${compile.java}</source>
+					<target>${compile.java}</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
