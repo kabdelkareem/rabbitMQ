@@ -1,4 +1,4 @@
-#RabbitMQ Services Installer
+RabbitMQ Services Installer
 
 Purpose
 -------
@@ -38,6 +38,7 @@ Usage
 													app1-app2
 													
 	Examples:
+			
 		java -jar /path/to/this/project.jar AMQP localhost 15672 user pass vhost true app1-app2
 			will install app1-app2 integrations including users (app1/app1 & app2/app2) and permissions.
 			
