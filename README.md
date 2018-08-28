@@ -20,13 +20,15 @@ communication with consumer system administrator to solve the problem.
 This diagram explained what this project will do
 ![ScreenShot](project%20description%20diagram.jpg)
 
-There 'll be 5 independent modules in this project:
----------------------------------------------------
-- rabbitmq-installer: project to install project exchanges, queues, policies and users
-- rabbitmq-connector: project used as upper layer of amqp-client provided by rabbitMQ to make publishing & consumming easier.
-- app1: sample publisher application using rabbitmq-connector
-- app2: sample consummer application using rabbitmq-connector
-- esb: Enterprise Service Bus project responsible for requeue, deadletter, and log messages.
+
+## Modules **_(UNDER CONSTRUCTION)_**
+Module Name | Description
+------------ | -----------
+[rabbitmq-installer](rabbitmq-installer/README.md) | project to install project exchanges, queues, policies and users.
+[rabbitmq-connector](rabbitmq-connector/README.md) | project used as upper layer of amqp-client provided by rabbitMQ to make publishing & consumming easier.
+[app1](app1/README.md) | sample publisher application using rabbitmq-connector.
+[app2](app2/README.md) | sample consummer application using rabbitmq-connector.
+[esb](esb/README.md) | Enterprise Service Bus project responsible for requeue, deadletter, and log messages.
 
 
 Prerequisites for Running the Project
