@@ -1,4 +1,4 @@
-# Common RabbitMQ RabbitMQ and Properties
+# Common RabbitMQ Enums and Properties
 
 Purpose
 -------
