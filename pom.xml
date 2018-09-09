@@ -14,6 +14,8 @@
 		<module>rabbitmq-installer</module>
 		<module>rabbitmq-common</module>
 		<module>rabbitmq-connector</module>
+		<module>mock-app1</module>
+		<module>mock-app2</module>
 	</modules>
 
 	<properties>
@@ -96,6 +98,12 @@
 				<artifactId>rabbitmq-common</artifactId>
 				<version>${project.version}</version>
 			</dependency>
+			
+		  	<dependency>
+		  		<groupId>com.karim.examples.rabbitmq</groupId>
+		    	<artifactId>rabbitmq-connector</artifactId>
+				<version>${project.version}</version>
+		  	</dependency>
 		</dependencies>
 	</dependencyManagement>
 
