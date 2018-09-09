@@ -26,8 +26,8 @@ Module Name | Description
 ------------ | -----------
 [rabbitmq-installer](rabbitmq-installer/README.md) | project to install project exchanges, queues, policies and users.
 [rabbitmq-connector](rabbitmq-connector/README.md) | project used as upper layer of amqp-client provided by rabbitMQ to make publishing & consumming easier.
-[app1](app1/README.md) | sample publisher application using rabbitmq-connector.
-[app2](app2/README.md) | sample consummer application using rabbitmq-connector.
+[mock-app1](mock-app1/README.md) | sample publisher application using rabbitmq-connector.
+[mock-app2](mock-app2/README.md) | sample consummer application using rabbitmq-connector.
 [esb](esb/README.md) | Enterprise Service Bus project responsible for requeue, deadletter, and log messages.
 
 
