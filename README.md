@@ -25,6 +25,7 @@ This diagram explained what this project will do
 Module Name | Description
 ------------ | -----------
 [rabbitmq-installer](rabbitmq-installer/README.md) | project to install project exchanges, queues, policies and users.
+[rabbitmq-common](rabbitmq-common/README.md) | common enums to be used by [rabbitmq-connector](rabbitmq-connector) and [esb](esb) modules
 [rabbitmq-connector](rabbitmq-connector/README.md) | project used as upper layer of amqp-client provided by rabbitMQ to make publishing & consumming easier.
 [mock-app1](mock-app1/README.md) | sample publisher application using rabbitmq-connector.
 [mock-app2](mock-app2/README.md) | sample consummer application using rabbitmq-connector.
