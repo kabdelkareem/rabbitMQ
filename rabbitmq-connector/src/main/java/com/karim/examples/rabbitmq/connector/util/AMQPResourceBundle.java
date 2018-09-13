@@ -1,5 +1,6 @@
 package com.karim.examples.rabbitmq.connector.util;
 
+import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
 /**
@@ -32,5 +33,22 @@ public final class AMQPResourceBundle {
 		if(bundle == null)
 			bundle =  ResourceBundle.getBundle("messages");
 		return bundle.getString(msg_key);
+	}
+	
+	
+	/**
+	 * Gets the value from bundle according to current language and replace placeholders
+	 * with parameters in parameters array.
+	 * 
+	 * @param msg_key		the message key to retrieve from the bundle 
+	 * @param parameters 	the message parameters
+	 * @return	the value from bundle according to current language if specified
+	 * 			 or according to default bundle.
+	 */
+	public static String getParameterizedMessage(String msg_key, Object... parameters){
+		if(bundle == null)
+			bundle =  ResourceBundle.getBundle("messages");
+		String message = bundle.getString(msg_key);
+		return MessageFormat.format(message, parameters);
 	}
 }

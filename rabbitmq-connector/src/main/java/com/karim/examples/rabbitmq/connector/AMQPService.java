@@ -16,6 +16,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import com.karim.examples.rabbitmq.common.enums.ContentTypeEnum;
 import com.karim.examples.rabbitmq.common.enums.DeliveryModeEnum;
@@ -33,15 +34,16 @@ import com.karim.examples.rabbitmq.connector.parser.XmlFormatter;
 import com.karim.examples.rabbitmq.connector.util.AMQPResourceBundle;
 import com.karim.examples.rabbitmq.connector.util.Log4j;
 import com.karim.examples.rabbitmq.connector.util.NetworkUtil;
-
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.ConfirmListener;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Consumer;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
+import com.rabbitmq.client.ReturnListener;
 
 /**
  * This class contains a set of methods that operates on sending and receiving messages from 
@@ -450,8 +452,6 @@ public final class AMQPService {
 			Map<String, Object> headers, 
 			E msgObj) throws AMQPCustomException, JAXBCustomException, JSONCustomException {
 		
-		confirmSelect(channel);
-		
 		// Message Headers
 		headers = enrichPublishHeaders(headers,
 				argsConfigurer.getExhange(),
@@ -489,7 +489,6 @@ public final class AMQPService {
 				argsConfigurer.getRoutingKey(), 
 				messageProperties, message.getBytes(UTF_8));
 		
-		waitForConfirmsOrDie(channel);
 		
 		return messageId;
 	}
@@ -593,14 +592,8 @@ public final class AMQPService {
 						 try {
 							 newChannel = createChannel();
 							
-							 // Define the confirm on the channel before publishing the message.
-							 confirmSelect(newChannel);
-								
 							 // publish the message again
-							 newChannel.basicPublish("", replyQueueName, properties, body);
-							 
-							 //  wait for a confirmation that all messages published successfully.
-							 waitForConfirmsOrDie(newChannel);
+							 basicPublish(newChannel, "", replyQueueName, properties, body);
 								
 							 // send an acknowledge to current queue to remove the message
 							 this.getChannel().basicAck(envelope.getDeliveryTag(), false);
@@ -831,7 +824,6 @@ public final class AMQPService {
 		Channel replyChannel = null;
 		try {
 			replyChannel = createChannel();
-			confirmSelect(replyChannel);
 
 			Map<String, Object> responseHeaders = enrichPublishHeaders(null, "", responeFromQueue);
 			
@@ -858,13 +850,13 @@ public final class AMQPService {
 			
 			basicPublish(replyChannel, "", ((String) replyToQueue), messageProperties, messageBody);
 			
-			waitForConfirmsOrDie(replyChannel);
 		} catch (Throwable ignoreEx) {
 			Log4j.traceErrorException(AMQPService.class, ignoreEx, ignoreEx.getMessage());
 		} finally {
 			closeChannel(replyChannel);
 		}
 	}
+	
 	/////////////////////////////////////////// Encapsulate Channel Functions /////////////////////
 	/**
 	 * publish message to the broker through a channel
@@ -883,10 +875,76 @@ public final class AMQPService {
 			BasicProperties props, 
 			byte[] message) throws AMQPCustomException {
 		try {
-			channel.basicPublish(exchange, routingKey, props, message);
+			
+			final AtomicReference<IOException> publishingEx = new AtomicReference<>();
+			
+			/**
+			 * Register the return listener to get un-routed messages on an exchange. 
+			 * Note: if an alternate exchange declared, this listener'll not triggered
+			 * and message treated as be routed.  
+			 */
+			channel.addReturnListener(new ReturnListener() {
+				
+				@Override
+				public void handleReturn(int replyCode,
+						String replyText,
+						String exchange,
+						String routingKey,
+						AMQP.BasicProperties properties,
+						byte[] body) throws IOException {
+					publishingEx.set(new IOException(
+							AMQPResourceBundle.getParameterizedMessage("error_AMQP035", 
+									replyCode,
+									replyText,
+									routingKey,
+									exchange)));
+				}
+			}); 
+
+
+			/**
+			 * Register the confirm listener to be acknowledge when basic.nack received. 
+			 */
+			channel.addConfirmListener(new ConfirmListener() {
+				
+				@Override
+				public void handleNack(long deliveryTag, boolean multiple) throws IOException {
+					publishingEx.set(
+							new IOException(AMQPResourceBundle.getMessage("error_AMQP036"),
+									publishingEx.get()));
+				}
+				
+				@Override
+				public void handleAck(long deliveryTag, boolean multiple) throws IOException {
+					// Nothing to do
+				}
+			});
+			
+			// Add confirm select to channel.
+			confirmSelect(channel);
+			// Publish the message
+			channel.basicPublish(exchange, routingKey, true, props, message);
+			// It'll throw IOException if the message was nack'd
+			waitForConfirmsOrDie(channel);
+
+			
+			/**
+			 * Check that message routed successfully, supposed to be exist 
+			 * as waitForConfirmsOrDie'll wait until all messages published 
+			 * since the last call have been either ack'd or nack'd by 
+			 * the broker, so no need for more waiting for response.
+			 */
+			
+			if(publishingEx.get() != null) {
+				throw publishingEx.get();
+			}
 		} catch (IOException e) {
 			throw new AMQPCustomException(AMQPResourceBundle.getMessage("error_AMQP014"), e);
+		} finally {
+			channel.clearReturnListeners();
+			channel.clearConfirmListeners();
 		}
+		
 	}
 	
 	/**
@@ -919,29 +977,6 @@ public final class AMQPService {
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			throw new AMQPCustomException(AMQPResourceBundle.getMessage("error_AMQP012"), e);
-		}
-	}
-	
-	/**
-	 * wait for a confirmation that all messages published successfully to the broker or 
-	 * exceed the timeout
-	 * 
-	 * @category Producer
-	 * @param channel the channel to waitForConfirmsOrDie
-	 * @param timeout timeout to wait
-	 * @throws AMQPCustomException if an error is encountered
-	 */
-	@SuppressWarnings(value="unused")
-	private void waitForConfirmsOrDie(Channel channel, long timeout) throws AMQPCustomException {
-		try {
-			channel.waitForConfirmsOrDie(timeout);
-		} catch (IOException e) {
-			throw new AMQPCustomException(AMQPResourceBundle.getMessage("error_AMQP011"), e);
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-			throw new AMQPCustomException(AMQPResourceBundle.getMessage("error_AMQP012"), e);
-		} catch (TimeoutException e) {
-			throw new AMQPCustomException(AMQPResourceBundle.getMessage("error_AMQP013"), e);
 		}
 	}
 	
